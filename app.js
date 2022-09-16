@@ -23,22 +23,31 @@ const carousel = ($container, images) => {
   document.querySelector('.carousel-slides').style.setProperty('--currentSlide', currentSlideIndex);
   $container.style.opacity = 1;
 
+  // const $carouselSlides = document.querySelector('.carousel-slides');
+  let isTransitioning = false;
+  document.querySelector('.carousel-slides').addEventListener('transitionstart', () => {
+    isTransitioning = true;
+  });
+  document.querySelector('.carousel-slides').addEventListener('transitionend', () => {
+    isTransitioning = false;
+    document.querySelector('.carousel-slides').style.setProperty('--duration', 0);
+    if (currentSlideIndex === 0) currentSlideIndex = images.length;
+    if (currentSlideIndex === images.length + 1) currentSlideIndex = 1;
+    document.querySelector('.carousel-slides').style.setProperty('--currentSlide', currentSlideIndex);
+  });
+
+  // setInterval(() => console.log(currentSlideIndex, isTransitioning), 100);
+
   document.querySelector('.prev').addEventListener('click', () => {
-    console.log(currentSlideIndex);
-    if (currentSlideIndex === 1) {
-      document.querySelector('.carousel-slides').style.transition = 'none';
-      currentSlideIndex = images.length + 1;
-      document.querySelector('.carousel-slides').style.setProperty('--currentSlide', currentSlideIndex);
-      document.querySelector('.carousel-slides').style.transition = 'transform calc(var(--duration) * 1ms) ease-out';
-    }
+    if (isTransitioning) return;
+    document.querySelector('.carousel-slides').style.setProperty('--duration', 500);
     document.querySelector('.carousel-slides').style.setProperty('--currentSlide', --currentSlideIndex);
-    console.log(currentSlideIndex);
   });
 
   document.querySelector('.next').addEventListener('click', () => {
-    ++currentSlideIndex;
-    if (currentSlideIndex > images.length - 1) currentSlideIndex = 0;
-    document.querySelector('.carousel-slides').style.setProperty('--currentSlide', currentSlideIndex);
+    if (isTransitioning) return;
+    document.querySelector('.carousel-slides').style.setProperty('--duration', 500);
+    document.querySelector('.carousel-slides').style.setProperty('--currentSlide', ++currentSlideIndex);
   });
 };
 
